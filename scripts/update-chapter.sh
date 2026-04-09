@@ -32,7 +32,15 @@ cd "$WORKSPACE"
 git add -A
 git commit -m "完成第$(printf "%03d" $((NEXT_CHAPTER - 1)))回" 2>/dev/null || true
 
-echo "[$(date)] 第${NEXT_CHAPTER}回更新标记已设置"
+# 推送到 GitHub（如果配置了远程仓库）
+if git remote get-url origin >/dev/null 2>&1; then
+    echo "[$(date)] 推送到 GitHub..."
+    git push origin master || git push origin main || echo "[$(date)] 推送失败，请检查网络或权限"
+else
+    echo "[$(date)] 未配置 GitHub 远程仓库，跳过推送"
+fi
+
+echo "[$(date)] 第${NEXT_CHAPTER}回更新完成"
 
 # 移除锁文件
 rm -f "$LOCK_FILE"
